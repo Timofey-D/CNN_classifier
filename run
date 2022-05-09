@@ -1,0 +1,2 @@
+clear
+python3 src/nn_classifier.py hhd_dataset
