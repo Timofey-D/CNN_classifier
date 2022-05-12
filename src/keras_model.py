@@ -1,170 +1,105 @@
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras import layers, models, regularizers
-from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix
+from tensorflow.keras.utils import to_categorical
 import tensorflow
+import matplotlib
+from matplotlib import pyplot as plt
 
 
 class Keras:
 
-    def __init__(self, config, L1=0.01, L2=0.01, dropout=0.5, verbose=0):
+    def __init__(self, train, valid, train_l, valid_l, optimizer_f='rmsprop', loss_f='categorical_crossentropy', metric='accuracy'):
 
         self.NN = Sequential()
+        self.__structure__()
 
-        self.L1 = L1
-        self.L2 = L2
-        self.dropout = dropout
-    
-        match config:
-            case 1:       
-                if verbose == 1:
-                    print("Configuration {}: without regularization".format(config))
-                self.configuration()
-            case 2:
-                if verbose == 1:
-                    print("Configuration {}: with regularizer L1 = {}".format(config, self.L1))
-                self.configuration_L1()
-            case 3:
-                if verbose == 1:
-                    print("Configuration {}: with regularizer L2 = {}".format(config, self.L2))
-                self.configuration_L2()
-            case 4:
-                if verbose == 1:
-                    print("Configuration {}: with regularizer dropout = {}".format(config, self.dropout))
-                self.configuration_dropout()
-            case 5:
-                if verbose == 1:
-                    print("Configuration {}: with regularizer L2 = {} and dropout = {}".format(config, self.L2, self.dropout))
-                self.configuration_L2_dropout()
+        # Change each value of the array to float
+        self.train = train.astype('float32')
+        self.valid = valid.astype('float32')
 
+        # Change the labels from integer to categorical data
+        self.cat_train_l = to_categorical(train_l)
+        self.cat_valid_l = to_categorical(valid_l)
+
+        self.NN.compile(optimizer=optimizer_f, loss=loss_f, metrics=[metric])
 
     def model_info(self):
         print(self.NN.summary())
 
+    def __structure__(self):
 
-    def configuration(self):
-
-        self.NN.add(layers.Conv2D(32, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1)))
-        #self.NN.add(layers.ReLU())
-        self.NN.add(layers.Conv2D(32, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1)))
-        #self.NN.add(layers.ReLU())
+        self.NN.add(layers.Conv2D(32, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1), activation='relu'))
+        self.NN.add(layers.Conv2D(32, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1), activation='relu'))
         self.NN.add(layers.MaxPool2D())
         self.NN.add(Dropout(0.25))
 
-        self.NN.add(layers.Conv2D(64, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1)))
-        #self.NN.add(layers.ReLU())
-        self.NN.add(layers.Conv2D(64, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1)))
-        #self.NN.add(layers.ReLU())
+        self.NN.add(layers.Conv2D(64, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1), activation='relu'))
+        self.NN.add(layers.Conv2D(64, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1), activation='relu'))
         self.NN.add(layers.MaxPool2D())
         self.NN.add(Dropout(0.25))
 
-        self.NN.add(layers.Conv2D(128, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1)))
-        #self.NN.add(layers.ReLU())
-        self.NN.add(layers.Conv2D(128, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1)))
-        #self.NN.add(layers.ReLU())
+        self.NN.add(layers.Conv2D(128, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1), activation='relu'))
+        self.NN.add(layers.Conv2D(128, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1), activation='relu'))
         self.NN.add(layers.MaxPool2D())
         self.NN.add(Dropout(0.25))
         
         self.NN.add(layers.Flatten())
         self.NN.add(Dense(512))
-        #self.NN.add(layers.ReLU())
         self.NN.add(Dropout(0.5))
-        #self.NN.add(layers.Flatten())
-        self.NN.add(Dense(27))
-
-
-    def configuration_L1(self):
-        
-        self.NN.add(Dense(1024, activation='relu', kernel_regularizer=regularizers.L1(self.L1)))
-        self.NN.add(Dense(512, kernel_regularizer=regularizers.L1(self.L1)))
-        self.NN.add(Dense(512, kernel_regularizer=regularizers.L1(self.L1)))
         self.NN.add(Dense(27, activation='softmax'))
 
 
-    def configuration_L2(self):
+    def train_network(self, batch=32, iteration=100, verb=1):
 
-        self.NN.add(Dense(1024, activation='relu', kernel_regularizer=regularizers.L2(self.L2)))
-        self.NN.add(Dense(512, kernel_regularizer=regularizers.L2(self.L2)))
-        self.NN.add(Dense(512, kernel_regularizer=regularizers.L2(self.L2)))
-        self.NN.add(Dense(27, activation='softmax'))
-
-
-    def configuration_dropout(self):
-
-        self.NN.add(Dense(1024, activation='relu'))
-        self.NN.add(Dropout(self.dropout))
-        self.NN.add(Dense(512))
-        self.NN.add(Dropout(self.dropout))
-        self.NN.add(Dense(512))
-        self.NN.add(Dense(27, activation='softmax'))
-
-
-    def configuration_L2_dropout(self):
-
-        self.NN.add(Dense(1024, activation='relu', kernel_regularizer=regularizers.L2(self.L2)))
-        self.NN.add(Dropout(self.dropout))
-        self.NN.add(Dense(512, kernel_regularizer=regularizers.L2(self.L2)))
-        self.NN.add(Dropout(self.dropout))
-        self.NN.add(Dense(512, kernel_regularizer=regularizers.L2(self.L2)))
-        self.NN.add(Dropout(self.dropout))
-        self.NN.add(Dense(27, activation='softmax'))
-
-
-    def train(self, train, cat_train_l, valid, cat_valid_l, batch=32, iteration=100, verb=1):
-        self.train = self.NN.fit(
-                train, 
-                cat_train_l, 
+        self.trained = self.NN.fit(
+                self.train, 
+                self.cat_train_l, 
                 batch_size=batch, 
                 epochs=iteration, 
                 verbose=verb, 
-                validation_data=(valid, cat_valid_l)
+                validation_data=(self.valid, self.cat_valid_l)
         )
 
-    def set_L1(self, value):
-        self.L1 = value
+    def get_report(self):
+        report = dict()
 
-    def set_L2(self, value):
-        self.L2 = value
+        # To get a prediction value
+        prediction = self.NN.predict(self.valid)    
+        report.update( { 'prediction' : prediction } )
 
-    def set_dropout(self, value):
-        self.dropout = value
+        # To get the loss and accuracy values
+        [loss, accuracy] = self.NN.evaluate(self.valid, self.cat_valid_l)
+        report.update( { 'loss' : loss } )
+        report.update( { 'accuracy' : accuracy } )
 
-    def get_evaluate(self, data, labels):
-        [loss, accuracy] = self.NN.evaluate(data, labels)
-        print("Evaluation result on Test Data : Loss = {}, accuracy = {:.2%}".format(loss, accuracy))
+        # To get a confusion matrix
+        conf_matrix = confusion_matrix(self.cat_valid_l.argmax(axis=1), prediction.argmax(axis=1))
+        report.update( { 'confusion matrix' : conf_matrix } )
 
-    def predict(self, data):
-        self.prediction = self.NN.predict(data)
+        # To get a classification report
+        class_report = classification_report(self.cat_valid_l.argmax(axis=1), prediction.argmax(axis=1))
+        report.update( { 'classification report' : class_report } )
 
-    def compilation(self):
-        self.NN.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
-        #self.NN.compile(loss='categorical_crossentropy', metrics=['accuracy'])
-
-    def get_L1(self):
-        return self.L1
-
-    def get_L2(self):
-        return self.L2
-
-    def get_dropout(self):
-        return self.dropout
-
-    def get_evaluate(self, data, labels):
-        evaluate = self.NN.evaluate(data, labels)
-        return evaluate
-
-    def get_report(self, labels):
-        report = classification_report(labels.argmax(axis=1), self.prediction.argmax(axis=1))
+        # [prediction, loss, accuracy, confusion matrix]
         return report
 
-    def get_confusion_matrix(self, labels): 
-        conf_matrix = confusion_matrix(labels.argmax(axis=1), self.prediction.argmax(axis=1))
-        return conf_matrix
-
-    def get_neural_network(self):
+    def get_NN(self):
         return self.NN
 
-    def get_train(self):
-        return self.train
+    def get_trained(self):
+        return self.trained
+
+    def plot(self, value):
+        plt.plot(self.train.history[value])
+
+        plt.plot(self.train.history['val_' + value])
+
+        title_ = 'model ' + value
+        plt.title(title)
+        plt.ylabel(value)
+        plt.xlabel('epoch')
+        plt.legend(['train', 'test'], loc='upper left')
+        plt.show()
 
