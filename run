@@ -1,2 +1,2 @@
 clear
-python3 src/nn_classifier.py hhd_dataset
+python3 src/cnn_classifier.py hhd_dataset
