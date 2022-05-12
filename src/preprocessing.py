@@ -7,11 +7,24 @@ from sklearn.model_selection import train_test_split
 
 class Preprocessing:
 
-    def __init__(self, path):
+    def __init__(self, dirdata):
 
-        self.dataset = load_files(path)
+        self.path = self.__check_path__(dirdata)
+        self.dataset = load_files(self.path)
         self.raw_data = self.dataset.filenames
         self.labels = np.array(self.dataset.target)
+
+    def __check_path__(self, dirdata):
+        path = None
+
+        try:
+            # To get a path to dataset
+            path = os.path.join(os.getcwd(), dirdata)
+        except:
+            raise Exception("The directory does not exist or the command was entered wrong!")
+
+        return path
+
 
     # To get a pad to image
     def __add_padding__(self, image):
@@ -34,11 +47,9 @@ class Preprocessing:
         (X, Y, LX, LY) = train_test_split(data, labels, test_size=size_of_test, random_state=rand_state, shuffle=shuffling)
         return (X, Y, LX, LY)
 
-    def reshape_data(self, width=32, height=32):
+    def reshape_data(self, width=32, height=32, channels=1):
         # To reshape data
-        #self.data = self.data.reshape((self.data.shape[0], width, height, 1))
-        self.data = self.data.reshape((self.data.shape[0], width, height))
-        pass
+        self.data = self.data.reshape((self.data.shape[0], width, height, channels))
 
     def get_dataset(self):
         return self.dataset
