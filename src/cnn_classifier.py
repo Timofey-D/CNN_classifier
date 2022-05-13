@@ -3,7 +3,6 @@ import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
-from tensorflow.keras.preprocessing.image import ImageDataGenerator 
 from keras_model import Keras
 from preprocessing import Preprocessing
 
@@ -42,53 +41,25 @@ def main():
     #data_info(train, test, train_l, test_l)
     #data_info(valid, tst, valid_l, tst_l)
 
-    
-   
-    '''___________________________________________________'''
+    print("The program consists of 2 modes.")
+    print("The 1 mode is a training without augmentation.")
+    print("The 2 mode is a training with augmentation.")
+    mode = int(input("Choose the program mode [1, 2]: "))
 
     
-    #NN = Keras(train, valid, train_l, valid_l)
-    #NN.train_network(batch=256, iteration=50, verb=0)
+    NN = Keras(train, valid, train_l, valid_l)
 
-    #NN.model_info()
+    if mode == 1:
+        NN.train_network(batch=256, iteration=50, verb=0)
 
-    #report = NN.get_report()
+    elif mode == 2:
+        NN.train_network_with_augmentation(batch=256, iteration=50, verb=0)
 
-    #print(report['classification report'])
-    #print(report['prediction'])
+    else:
+        raise Exception("The passed mode does not exist!")
 
-    #prepare_report_files(config, evaluate, report, confusion_matrix, L1, L2)
-    
-    '''___________________________________________________'''
-
-    datagen = ImageDataGenerator(
-        width_shift_range=0.1,
-        height_shift_range=0.1,
-        horizontal_flip=False,
-        vertical_flip=False,
-        rotation_range=10,
-        shear_range=0.2,
-        brightness_range=(0.2, 1.8),
-        rescale=1. / 255
-    )
-    
-    dataset.reshape_data(channels=1)
-    (train, validating, train_l, validating_l) = dataset.split_data(data, labels, size_of_test=0.2, rand_state=None)
-    (valid, test, valid_l, test_l) = dataset.split_data(validating, validating_l, size_of_test=0.5, rand_state=None)
-
-    print(train.shape)
-    datatrain = datagen.fit(train)
-    datatrain = datagen.apply_transform(train)
-    print(train.shape)
-
-    #NN = Keras(train, valid, train_l, valid_l)
-    #NN.train_network(batch=256, iteration=50, verb=0)
-
-    #NN.model_info()
-
-    #report = NN.get_report()
-
-    #print(report['classification report'])
+    report = NN.get_report()
+    print(report['classification report'])
 
 
 if __name__ == '__main__':
