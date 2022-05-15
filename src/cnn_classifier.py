@@ -3,15 +3,15 @@ import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
-from keras_model import Keras
 from mode import Mode
+from output import Output
  
 
 def greeting():
     print("The program consists of 3 modes.")
-    print("The 1 mode is a training without augmentation.")
-    print("The 2 mode is a training with augmentation.")
-    print("The final mode is a training without augmentation")
+    print("The mode 1 is a training without augmentation.")
+    print("The mode 2 is a training with augmentation.")
+    print("The final mode is a training without augmentation.")
 
 
 def choose_mode():
@@ -28,16 +28,16 @@ def main():
     mode = choose_mode()
     print()
 
-    program = Mode(mode, sys.argv[-1], True)
+    program = Mode(mode, sys.argv[-1], False)
     print()
     program.data_info()
     print()
 
-    program.run_mode(256, 50, 0)
+    program.run_mode(256, 10, 0)
     NN = program.get_NN()
     
-    report = NN.get_report()
-    print(report['loss'], report['accuracy'])
+    output = Output(NN.get_report(), mode)
+    output.create_report_directory()
 
 
 if __name__ == '__main__':
