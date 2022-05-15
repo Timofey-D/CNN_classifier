@@ -1,42 +1,71 @@
+import os
 import pandas as pd
 import numpy as np
+from mode import Mode
 
 
-def prepare_report_files(config=0, evaluate=None, report=None, conf_matrix=None, L1 = None, L2 = None):
+class Output:
+    """
+        result.txt
+        - configuration of the model
+        - classification report
+        - accuracy / loss
 
-    curr_dir = os.getcwd()
-    output_path = os.path.join(curr_dir, "Outputs")
+        confusion_matrix.csv
+        - confusion matrix
+    """
+    def __init__(self, report, mode):
 
-    if not os.path.exists(output_path):
-        os.mkdir(output_path)
-    
-    if os.path.exists(output_path):
-        os.chdir(output_path)
+        self.report = report
+        self.mode = Mode(mode)
 
-    curr_dir = os.getcwd()
 
-    config_path = os.path.join(curr_dir, "Congiguration_" + (str(config)) if config != 6 else "Final_configuration")
-    if not os.path.exists(config_path) and config != 0:
-        os.mkdir(config_path)
+    def create_report_directory(self):
+        self.__mkdir__("Output")
         
-    if os.path.exists(config_path):
-        os.chdir(config_path)
+        self.__mkdir__(self.mode.get_info_trained())
+        
+        self.__create_result_file__()
+        self.__create_confusion_matrix_file__()
+                 
+    
+    def __create_confusion_matrix_file__(self):
 
-    file_1 = 'result.txt'
-
-    configuration = ''
-
-    with open(file_1, 'w') as result:
-        result.write(configuration + '\n' + '\n')
-
-        if evaluate != None:
-            result.write('Accuracy = {:.2%}\n'.format(evaluate[1]))
-            result.write('Loss = {:.4f}\n\n'.format(evaluate[0]))
-
-
-        if report != None:
-            result.write(report)
-
-    if conf_matrix.any():
-        df = pd.DataFrame(conf_matrix)
+        df = pd.DataFrame(self.report['confusion matrix'])
         df.to_csv('confusion_matrix')
+
+
+    def __create_result_file__(self):
+        
+        data = ['loss', 'accuracy', 'classification report']
+
+        with open('result.txt', 'w') as f:
+
+            f.write(self.mode.__info_mode__() + '\n')
+            f.write('\n')
+
+            for param in data:
+
+                line = str(self.report[param]) + '\n'
+
+                if param == data[0]:
+                    line = "Loss: {:.4}".format(self.report[param])
+                elif param == data[1]:
+                    line = "Accuracy: {:.2%}\n".format(self.report[param])
+
+                f.write(str(line))
+                f.write('\n')
+
+            f.close()
+    
+
+    def __mkdir__(self, dirname):
+
+        curr_dir = os.getcwd()
+        path = os.path.join(curr_dir, dirname)
+
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+        os.chdir(path)
+    
