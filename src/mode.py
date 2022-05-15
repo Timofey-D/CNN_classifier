@@ -9,8 +9,7 @@ class Mode:
         
         self.mode = mode
 
-        if datadir != None:
-            self.__dataset__(datadir)
+        self.__dataset__(datadir)
 
         if print_ == True:
             self.print_mode()
