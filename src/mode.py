@@ -5,13 +5,23 @@ import numpy as np
 
 class Mode:
 
-    def __init__(self, mode, datadir, print_=False):
+    def __init__(self, mode, datadir=None, print_=False):
         
         self.mode = mode
-        self.__dataset__(datadir)
+
+        if datadir != None:
+            self.__dataset__(datadir)
 
         if print_ == True:
             self.print_mode()
+
+
+    def get_info_trained(self):
+
+        if self.mode == 1 or self.mode == 2:
+            return "Mode_{}".format(self.mode)
+        else:
+            return "Final_mode"
 
 
     def get_mode(self):
@@ -47,7 +57,7 @@ class Mode:
 
 
     def data_info(self):
-        print("INFORMATION BY DATASET")
+        print("Information by dataset:")
 
         print('Training data:', self.data_1.shape, self.labels_1.shape)
         print("Testing data:" if self.mode == 3 else 'Validating data:', self.data_2.shape, self.labels_2.shape)
