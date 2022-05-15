@@ -32,17 +32,17 @@ class Keras:
     def __structure__(self):
 
         self.NN.add(layers.Conv2D(32, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1), activation='relu'))
-        self.NN.add(layers.Conv2D(32, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1), activation='relu'))
+        self.NN.add(layers.Conv2D(32, kernel_size=(3, 3), padding='same', activation='relu'))
         self.NN.add(layers.MaxPool2D())
         self.NN.add(Dropout(0.25))
 
-        self.NN.add(layers.Conv2D(64, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1), activation='relu'))
-        self.NN.add(layers.Conv2D(64, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1), activation='relu'))
+        self.NN.add(layers.Conv2D(64, kernel_size=(3, 3), padding='same', activation='relu'))
+        self.NN.add(layers.Conv2D(64, kernel_size=(3, 3), padding='same', activation='relu'))
         self.NN.add(layers.MaxPool2D())
         self.NN.add(Dropout(0.25))
 
-        self.NN.add(layers.Conv2D(128, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1), activation='relu'))
-        self.NN.add(layers.Conv2D(128, kernel_size=(3, 3), padding='same', input_shape=(32, 32, 1), activation='relu'))
+        self.NN.add(layers.Conv2D(128, kernel_size=(3, 3), padding='same', activation='relu'))
+        self.NN.add(layers.Conv2D(128, kernel_size=(3, 3), padding='same', activation='relu'))
         self.NN.add(layers.MaxPool2D())
         self.NN.add(Dropout(0.25))
         
@@ -106,7 +106,7 @@ class Keras:
         class_report = classification_report(self.cat_valid_l.argmax(axis=1), prediction.argmax(axis=1))
         report.update( { 'classification report' : class_report } )
 
-        # [prediction, loss, accuracy, confusion matrix]
+        # [prediction, loss, accuracy, confusion matrix, classification report]
         return report
 
     def get_NN(self):
