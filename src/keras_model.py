@@ -116,12 +116,12 @@ class Keras:
         return self.trained
 
     def plot(self, value):
-        plt.plot(self.train.history[value])
+        plt.plot(self.trained.history[value])
 
-        plt.plot(self.train.history['val_' + value])
+        plt.plot(self.trained.history['val_' + value])
 
         title_ = 'model ' + value
-        plt.title(title)
+        plt.title(title_)
         plt.ylabel(value)
         plt.xlabel('epoch')
         plt.legend(['train', 'test'], loc='upper left')
