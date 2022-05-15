@@ -33,12 +33,12 @@ def main():
     program.data_info()
     print()
 
-    program.run_mode(256, 50, 0)
+    program.run_mode(256, 5, 0)
     NN = program.get_NN()
 
     NN.plot("loss")
     
-    output = Output(NN.get_report(), mode)
+    output = Output(NN.get_report(), program)
     output.create_report_directory()
 
 
