@@ -14,16 +14,18 @@ class Output:
         confusion_matrix.csv
         - confusion matrix
     """
-    def __init__(self, report, mode):
+    def __init__(self, report, program_mode):
 
         self.report = report
-        self.mode = Mode(mode)
+        self.mode = program_mode.get_mode()
+        self.description = program_mode.__info_mode__()
+        self.directory = program_mode.get_info_trained()
 
 
     def create_report_directory(self):
         self.__mkdir__("Output")
         
-        self.__mkdir__(self.mode.get_info_trained())
+        self.__mkdir__(self.directory)
         
         self.__create_result_file__()
         self.__create_confusion_matrix_file__()
@@ -41,7 +43,7 @@ class Output:
 
         with open('result.txt', 'w') as f:
 
-            f.write(self.mode.__info_mode__() + '\n')
+            f.write(self.description + '\n')
             f.write('\n')
 
             for param in data:
