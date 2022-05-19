@@ -14,18 +14,9 @@ def greeting():
     print("The final mode is a training without augmentation.")
 
 
-def choose_mode():
-    mode = int(input("Choose the program mode [1, 2, 3 (final)]: "))
-    
-    if mode <= 0 or mode > 3:
-        raise Exception("The passed mode " + str(mode) + " does not exist!")
-
-    return mode
-
-
 def main():
     greeting()
-    mode = choose_mode()
+    mode = int(input("Enter the program mode [1, 2, 3]: "))
     print()
 
     program = Mode(mode, sys.argv[-1], False)
