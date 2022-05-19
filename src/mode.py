@@ -7,6 +7,7 @@ class Mode:
 
     def __init__(self, mode, datadir=None, print_=False):
         
+        self.__check_mode__(mode)
         self.mode = mode
 
         self.__dataset__(datadir)
@@ -30,6 +31,13 @@ class Mode:
     def print_mode(self):
         prog_mode = self.__info_mode__()
         print("The chosen mode is {}.\n{}".format(self.mode, prog_mode))
+
+
+    def __check_mode__(self, mode):
+        modes = [1, 2, 3]
+        
+        if modes.count(mode) == 0:
+            raise Exception("The passed mode " + str(mode) + " does not exist!")
 
 
     def __info_mode__(self):
